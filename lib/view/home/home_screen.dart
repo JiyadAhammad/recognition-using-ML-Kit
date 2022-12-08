@@ -1,5 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool textScanning = false;
   XFile? imageFile;
-  String scannedImage = '';
+  String scannedText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +29,20 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  height: 300,
-                  width: 300,
-                  color: Colors.black,
+                if (!textScanning && imageFile == null)
+                  textScanning
+                      ? CupertinoActivityIndicator()
+                      : Container(
+                          height: 300,
+                          width: 300,
+                          color: Colors.black,
+                        ),
+                if (imageFile != null)
+                  Image.file(
+                    File(imageFile!.path),
+                  ),
+                const SizedBox(
+                  height: 20,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,7 +62,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: const Text('camera'),
                     ),
                   ],
-                )
+                ),
+                if (scannedText.isEmpty) CupertinoActivityIndicator(),
+                Container(
+                  child: Text(
+                    scannedText,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -62,9 +87,31 @@ class _HomeScreenState extends State<HomeScreen> {
       if (pickedImage != null) {
         textScanning = true;
         imageFile = pickedImage;
+        setState(() {});
+        textRecognition(pickedImage);
       } else {
         Get.snackbar('error', 'please any image');
       }
-    } catch (e) {}
+    } catch (e) {
+      textScanning = false;
+      imageFile = null;
+      scannedText = 'Error while Selcting Image';
+    }
+  }
+
+  void textRecognition(XFile image) async {
+    final inputImage = InputImage.fromFilePath(image.path);
+    final textDetector = GoogleMlKit.vision.textRecognizer();
+    RecognizedText recognizedText = await textDetector.processImage(inputImage);
+    await textDetector.close();
+    scannedText = '';
+    for (TextBlock block in recognizedText.blocks) {
+      for (TextLine line in block.lines) {
+        scannedText = '$scannedText  ${line.text}  \n';
+      }
+    }
+    textScanning = false;
+    log(scannedText);
+    setState(() {});
   }
 }
