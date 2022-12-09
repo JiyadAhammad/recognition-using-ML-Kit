@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:recognition/view/home/home_screen.dart';
+import 'package:recognition/view/home/navbar/navbar.dart';
 
 void main() {
   runApp(
@@ -19,7 +19,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(),
+      // home: const BottomNavigationBarWidget(),
+      home: const BottomNavigationBarWidget(),
     );
   }
 }
