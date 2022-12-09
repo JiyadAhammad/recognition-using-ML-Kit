@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:recognition/view/home/navbar/navbar.dart';
 
-void main() {
+void main()  {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
   runApp(
     const MyApp(),
   );

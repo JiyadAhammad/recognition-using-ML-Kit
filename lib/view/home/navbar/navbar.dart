@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:circular_bottom_navigation/circular_bottom_navigation.dart';
 import 'package:circular_bottom_navigation/tab_item.dart';
 import 'package:flutter/material.dart';
+import 'package:recognition/view/fingerprint/finger_print_auth.dart';
 import 'package:recognition/view/home/text_recognition.dart';
 import 'package:recognition/view/voice/voice_recognition.dart';
 
@@ -84,6 +85,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
         return const VoiceRecognition();
 
       case 2:
+        return const BiometricTest();
 
       case 3:
 
