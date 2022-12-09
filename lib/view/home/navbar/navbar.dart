@@ -81,7 +81,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
         return const TextRecognitionScreen();
 
       case 1:
-        return VoiceRecognition();
+        return const VoiceRecognition();
 
       case 2:
 

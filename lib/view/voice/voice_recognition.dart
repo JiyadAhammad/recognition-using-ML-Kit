@@ -1,101 +1,72 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:get/get.dart';
+import 'package:recognition/view/constant/color/colors.dart';
+import 'package:recognition/view/voice/api/speech_api.dart';
 
 class VoiceRecognition extends StatefulWidget {
   const VoiceRecognition({Key? key}) : super(key: key);
 
   @override
-  _VoiceRecognitionState createState() => _VoiceRecognitionState();
+  State<VoiceRecognition> createState() => _VoiceRecognitionState();
 }
 
 class _VoiceRecognitionState extends State<VoiceRecognition> {
-  SpeechToText speechToText = SpeechToText();
-  bool _speechEnabled = false;
-  String _lastWords = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _initSpeech();
-  }
-
-  /// This has to happen only once per app
-  void _initSpeech() async {
-    _speechEnabled = await speechToText.initialize();
-    setState(() {});
-  }
-
-  /// Each time to start a speech recognition session
-  void _startListening() async {
-    await speechToText.listen(onResult: _onSpeechResult);
-    setState(() {});
-  }
-
-  /// Manually stop the active speech recognition session
-  /// Note that there are also timeouts that each platform enforces
-  /// and the SpeechToText plugin supports setting timeouts on the
-  /// listen method.
-  void _stopListening() async {
-    await speechToText.stop();
-    setState(() {});
-  }
-
-  /// This is the callback that the SpeechToText plugin calls when
-  /// the platform returns recognized words.
-  void _onSpeechResult(SpeechRecognitionResult result) {
-    setState(() {
-      _lastWords = result.recognizedWords;
-    });
-  }
-
+  String text = 'welcome';
+  bool isListening = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.orange,
       appBar: AppBar(
-        title: const Text('Speech Demo'),
+        title: const Text('Speech To Text'),
+        centerTitle: true,
+        backgroundColor: ktransparent,
+        elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: const Text(
-                'Recognized words:',
-                style: TextStyle(fontSize: 20.0),
-              ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 10,
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 22,
+              fontWeight: FontWeight.w400,
             ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  // If listening is active show the recognized words
-                  speechToText.isListening
-                      ? _lastWords
-                      // If listening isn't active but could be tell the user
-                      // how to start it, otherwise indicate that speech
-                      // recognition is not yet ready or not supported on
-                      // the target device
-                      : _speechEnabled
-                          ? 'Tap the microphone to start listening...'
-                          : 'Speech not available',
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.pink,
-        onPressed:
-            // If not yet listening for speech start, otherwise stop
-            speechToText.isNotListening ? _startListening : _stopListening,
-        tooltip: 'Listen',
-        child: Icon(speechToText.isNotListening ? Icons.mic_off : Icons.mic),
+        onPressed: () {},
+        child: IconButton(
+          onPressed: ontap,
+          icon: Icon(
+            isListening ? Icons.mic : Icons.mic_off,
+            size: 30,
+          ),
+        ),
       ),
+    );
+  }
+
+  Future ontap() {
+    log('message call');
+    return SpeechApi.toggleRecording(
+      onResults: (text) => setState(() {
+        log(text);
+        this.text = text;
+      }),
+      onListening: (isListening) => setState(() {
+        log('$isListening listening to audio');
+        this.isListening = isListening;
+      }),
     );
   }
 }
