@@ -10,6 +10,10 @@ class SpeechApi {
     required Function(String text) onResults,
     required ValueChanged<bool> onListening,
   }) async {
+    if (speech.isListening) {
+      speech.stop();
+      return true;
+    }
     final bool isAvailable = await speech.initialize(
       onStatus: (status) => onListening(
         speech.isListening,

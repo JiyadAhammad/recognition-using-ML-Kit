@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:recognition/view/constant/color/colors.dart';
@@ -24,13 +26,28 @@ class _VoiceRecognitionState extends State<VoiceRecognition> {
         centerTitle: true,
         backgroundColor: ktransparent,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await FlutterClipboard.copy(text);
+              Get.snackbar(
+                'success',
+                'Message copied to clipBoard',
+              );
+            },
+            icon: const Icon(
+              Icons.copy,
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
+        reverse: true,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 10,
-          ),
+          ).copyWith(bottom: 150),
           child: Text(
             text,
             style: const TextStyle(
@@ -41,15 +58,20 @@ class _VoiceRecognitionState extends State<VoiceRecognition> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.pink,
-        onPressed: () {},
-        child: IconButton(
-          onPressed: ontap,
-          icon: Icon(
-            isListening ? Icons.mic : Icons.mic_off,
-            size: 30,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: AvatarGlow(
+        animate: isListening,
+        endRadius: 75,
+        glowColor: Theme.of(context).hoverColor,
+        child: FloatingActionButton(
+          backgroundColor: Colors.pink,
+          onPressed: () {},
+          child: IconButton(
+            onPressed: ontap,
+            icon: Icon(
+              isListening ? Icons.mic : Icons.mic_off,
+              size: 30,
+            ),
           ),
         ),
       ),
